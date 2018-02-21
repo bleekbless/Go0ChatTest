@@ -1,0 +1,42 @@
+{
+	"AppURL": "http://127.0.0.1:8000",
+	"RequestTimeMin": 100,
+	"RequestTimeMax": 200,
+	"ResponsePauseMin": 1000,
+	"ResponsePauseMax": 5000,
+	"Rules": [
+		{
+			"Request": {
+				"Name": "question#1",
+				"URL": "/messages",
+				"BodySegment": "What is AppURL parameter above?"
+			},
+			"Response": {
+				"URL": "/fb-bot/",
+				"Body": "{'entry': [{'messaging': [{'timestamp': [timestamp], 'postback': {'payload': 'question:10', 'title': 'It is address of your app server'}, 'recipient': {'id': 1234567890}, 'sender': {'id': [RecipientId]}}]}]}"
+			}
+		},
+		{
+			"Request": {
+				"Name": "question#2",
+				"URL": "/messages",
+				"BodySegment": "Are there dynamical parameters that I can use?"
+			},
+			"Response": {
+				"URL": "/fb-bot/",
+				"Body": "{'entry': [{'messaging': [{'timestamp': [timestamp], 'postback': {'payload': 'question:13', 'title': 'Yes! [timestamp] for current timestamp and [RecipientId] for current user'}, 'recipient': {'id': 1234567890}, 'sender': {'id': [RecipientId]}}]}]}"
+			}
+		},
+		{
+			"Request": {
+				"Name": "question#3",
+				"URL": "/messages",
+				"BodySegment": "Is BodySegment a part of a request that you send to FB from your chat-bot?"
+			},
+			"Response": {
+				"URL": "/fb-bot/",
+				"Body": "{'entry': [{'messaging': [{'timestamp': [timestamp], 'postback': {'payload': 'question:18', 'title': 'Yes, it is some unique part of JSON body'}, 'recipient': {'id': 1234567890}, 'sender': {'id': [RecipientId]}}]}]}"
+			}
+		}
+	]
+}
