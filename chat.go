@@ -80,7 +80,9 @@ func readRequest(r *http.Request) error {
 	}
 	body := string(bodyBytes)
 
-	fmt.Printf("[%v] %v == %v\n", r.Method, r.URL, body)
+	if debug {
+		fmt.Printf("[%v] %v == %v\n", r.Method, r.URL, body)
+	}
 
 	if config.RequestTimeMax > 0 {
 		ms := rand.Intn(config.RequestTimeMax - config.RequestTimeMin)

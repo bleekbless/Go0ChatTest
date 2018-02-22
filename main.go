@@ -10,6 +10,7 @@ import (
 
 var portNumber *string
 var configFile *string
+var debug bool
 var config Config
 
 func botsHandler(w http.ResponseWriter, r *http.Request) {
@@ -24,25 +25,36 @@ func botsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func statHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("[%v] %v\n", r.Method, r.URL)
+	if debug {
+		fmt.Printf("[%v] %v\n", r.Method, r.URL)
+	}
 
 	printStat(w)
-	printStat(os.Stdout)
+
+	if debug {
+		printStat(os.Stdout)
+	}
 }
 
 func resetHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("[%v] %v\n", r.Method, r.URL)
+	if debug {
+		fmt.Printf("[%v] %v\n", r.Method, r.URL)
+	}
 
 	resetStat(config)
-
 	printStat(w)
-	printStat(os.Stdout)
+
+	if debug {
+		printStat(os.Stdout)
+	}
 }
 
 func main() {
 	portNumber = flag.String("port", "8877", "Port number to use for connection")
 	configFile = flag.String("conf", "config.json", "Path to config file")
+	debugFlag := flag.Bool("debug", false, "Write debug information")
 	flag.Parse()
+	debug = *debugFlag
 
 	readConfig(&config)
 	initStat(config)
