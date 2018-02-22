@@ -42,22 +42,17 @@ func (conf *Config) Prepare() {
 }
 
 func readConfig(config *Config) {
-	if len(os.Args) < 2 {
-		fmt.Println("You don't set a config file. You should use: $ app config.json")
-		os.Exit(0)
-	}
-
-	blob, err := ioutil.ReadFile(os.Args[1])
+	blob, err := ioutil.ReadFile(*configFile)
 	if err != nil || len(blob) == 0 {
 		fmt.Println("error:", err)
-		fmt.Println("Can't read config file. You should use: $ app config.json")
+		fmt.Println("Can't read config file. You should use \"-conf\" flag.")
 		os.Exit(0)
 	}
 
 	err = json.Unmarshal(blob, config)
 	if err != nil {
 		fmt.Println("error:", err)
-		fmt.Println("Can't decode config file. You should use: $ app config.json")
+		fmt.Printf("Can't decode config file [%v]\n", *configFile)
 		os.Exit(0)
 	}
 

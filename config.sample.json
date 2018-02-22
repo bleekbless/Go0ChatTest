@@ -7,6 +7,17 @@
 	"Rules": [
 		{
 			"Request": {
+				"Name": "greetings",
+				"URL": "/messages",
+				"BodySegment": "The game will start soon!"
+			},
+			"Response": {
+				"URL": "",
+				"Body": ""
+			}
+		},
+		{
+			"Request": {
 				"Name": "question#1",
 				"URL": "/messages",
 				"BodySegment": "What is AppURL parameter above?"

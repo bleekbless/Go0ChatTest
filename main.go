@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -21,6 +22,8 @@ type RecipientFiled struct {
 	ID string `json:"id"`
 }
 
+var portNumber *string
+var configFile *string
 var config Config
 
 func getRule(url, body string) (rule ChatRule, ok bool) {
@@ -127,16 +130,21 @@ func resetHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	portNumber = flag.String("port", "8877", "Port number to use for connection")
+	configFile = flag.String("conf", "config.json", "Path to config file")
+	flag.Parse()
+
 	readConfig(&config)
 	initStat(config)
 
 	fmt.Println("I'm ready!")
-	fmt.Println("http://127.0.0.1:8877/stat - use it for watching statistic during a test")
-	fmt.Println("http://127.0.0.1:8877/reset - use it to reset statistic between tests")
+	address := "http://127.0.0.1:" + *portNumber
+	fmt.Println(address + "/stat - use it for watching statistic during a test")
+	fmt.Println(address + "/reset - use it to reset statistic between tests")
 
 	http.HandleFunc("/stat", statHandler)
 	http.HandleFunc("/reset", resetHandler)
 	http.HandleFunc("/", botsHandler)
 
-	log.Fatal(http.ListenAndServe(":8877", nil))
+	log.Fatal(http.ListenAndServe(":"+*portNumber, nil))
 }
