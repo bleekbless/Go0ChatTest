@@ -96,7 +96,11 @@ func botsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rule, ok := getRule(r.URL.Path, body)
-	if !ok || rule.Response.URL == "" {
+	if !ok {
+		return
+	}
+	if rule.Response.URL == "" {
+		statChan <- Stat{Name: rule.Request.Name, ReqCount: 1, LastRequest: time.Now()}
 		return
 	}
 
