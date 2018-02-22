@@ -8,6 +8,8 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
+const otherRequests = "OTHERS"
+
 type Stat struct {
 	Name          string
 	ReqCount      int
@@ -82,10 +84,11 @@ func resetStat(config Config) {
 	for _, rule := range config.Rules {
 		statData[rule.Request.Name] = &Stat{Name: rule.Request.Name}
 	}
+	statData[otherRequests] = &Stat{Name: otherRequests}
 }
 
 func initStat(config Config) {
-	statOrder = make([]string, len(config.Rules))
+	statOrder = make([]string, len(config.Rules)+1)
 	statData = make(map[string]*Stat)
 	statChan = make(chan Stat, 1000)
 
@@ -93,6 +96,8 @@ func initStat(config Config) {
 		statOrder[i] = rule.Request.Name
 		statData[rule.Request.Name] = &Stat{Name: rule.Request.Name}
 	}
+	statOrder[len(config.Rules)] = otherRequests
+	statData[otherRequests] = &Stat{Name: otherRequests}
 
 	go statWriter()
 }

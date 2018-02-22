@@ -78,6 +78,10 @@ func sendResponse(rule ChatRule, reqBody string) {
 }
 
 func botsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		return
+	}
+
 	bodyBytes, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "Can't read body.", http.StatusBadRequest)
@@ -85,9 +89,7 @@ func botsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	body := string(bodyBytes)
 
-	if r.Method == "POST" {
-		fmt.Printf("[%v] %v == %v\n", r.Method, r.URL, body)
-	}
+	fmt.Printf("[%v] %v == %v\n", r.Method, r.URL, body)
 
 	if config.RequestTimeMax > 0 {
 		ms := rand.Intn(config.RequestTimeMax - config.RequestTimeMin)
@@ -97,6 +99,7 @@ func botsHandler(w http.ResponseWriter, r *http.Request) {
 
 	rule, ok := getRule(r.URL.Path, body)
 	if !ok {
+		statChan <- Stat{Name: otherRequests, ReqCount: 1, LastRequest: time.Now()}
 		return
 	}
 	if rule.Response.URL == "" {
@@ -128,6 +131,8 @@ func main() {
 	initStat(config)
 
 	fmt.Println("I'm ready!")
+	fmt.Println("http://127.0.0.1:8877/stat - use it for watching statistic during a test")
+	fmt.Println("http://127.0.0.1:8877/reset - use it to reset statistic between tests")
 
 	http.HandleFunc("/stat", statHandler)
 	http.HandleFunc("/reset", resetHandler)
