@@ -11,8 +11,7 @@ And if you need, the app sends requests in response.
 So you need:
 1. write `config.json` like this [config.sample.json](https://github.com/ss-dev/fb-chat-emulator/config.sample.json)
 2. run binary `$ fb-chat-emulator` for your config
-3. change Facebook URL in your app to the app URL
-for example:
+3. change Facebook URL in your app to the app URL, for example:
 ```python
 # URL_BASE = “https://graph.facebook.com/v2.6/me/”
 URL_BASE = “http://127.0.0.1:8877/”
@@ -75,6 +74,13 @@ and it's a full rule:
 ```
 
 You can write empty `Response` then the app won't send any response but will write statistic for the requests.
+
+## Templates
+As you could see in examples above you can use some template-variables in config.
+
+`[timestamp]` - it's replaced by current timestamp for response body
+
+`[RecipientId]` - it gets from request body
 
 ## Statistics
 You can watch realtime statistic during testing process in your browser `http://127.0.0.1:8877/stat`.
