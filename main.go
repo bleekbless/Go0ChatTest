@@ -52,7 +52,7 @@ func resetHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	portNumber = flag.String("port", "8877", "Port number to use for connection")
 	configFile = flag.String("conf", "config.json", "Path to config file")
-	debugFlag := flag.Bool("debug", false, "Write debug information")
+	debugFlag := flag.Bool("debug", true, "Write debug information")
 	flag.Parse()
 	debug = *debugFlag
 

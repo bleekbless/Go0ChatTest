@@ -6,13 +6,15 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 )
 
 type RecipientResponse struct {
-	Recipient RecipientFiled `json:"recipient"`
+	UserId                string `json:"userId"`
+	ConversationId        string `json:"conversationId"`
+	ConversationReference string `json:"conversationReference"`
+	UserName              string `json:"userName"`
 }
 
 type RecipientFiled struct {
@@ -37,7 +39,7 @@ func sendResponse(rule ChatRule, reqBody string) {
 		ms += config.ResponsePauseMin
 		time.Sleep(time.Duration(ms) * time.Millisecond)
 	}
-
+	fmt.Printf("Estou entrando aqui agora\n\n")
 	body := rule.Response.Body
 
 	// get RecipientId from request and use in Response
@@ -45,26 +47,37 @@ func sendResponse(rule ChatRule, reqBody string) {
 	err := json.Unmarshal([]byte(reqBody), &recResp)
 	if err != nil {
 		fmt.Errorf("Error on repicient unmarshaling: %v", err)
-	} else if recResp.Recipient.ID != "" {
-		body = strings.Replace(body, "[RecipientId]", recResp.Recipient.ID, -1)
+	} else if recResp.ConversationId != "" {
+		body = strings.Replace(body, "[cId]", recResp.ConversationId, -1)
+		body = strings.Replace(body, "[cReference]", recResp.ConversationReference, -1)
+		body = strings.Replace(body, "[uName]", recResp.UserName, -1)
+		body = strings.Replace(body, "[uId]", recResp.UserId, -1)
+
 	}
+	fmt.Printf("[%v]\n", body)
 
 	// set valid timestamp
-	t := time.Now()
-	ts := strconv.Itoa(int(t.UnixNano() / 1000000))
-	body = strings.Replace(body, "[timestamp]", ts, -1)
+	// t := time.Now()
+	// ts := strconv.Itoa(int(t.UnixNano() / 1000000))
+	// body = strings.Replace(body, "[timestamp]", ts, -1)
 
 	// right quotes
 	body = strings.Replace(body, "'", "\"", -1)
 
-	res, err := http.Post(
-		config.AppURL+rule.Response.URL,
-		"application/json",
-		strings.NewReader(body))
+	client := &http.Client{}
+
+	req, err := http.NewRequest("POST", config.AppURL, strings.NewReader(body))
+
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("X-Auth-Token", "aec6a4ad-22ba-4d85-bb88-ca5a0c259066")
+
+	res, err := client.Do(req)
+
 	if err != nil {
 		fmt.Println(err)
 		statChan <- Stat{Name: rule.Request.Name, RespCount: 1, RespNetErr: 1, LastResponse: time.Now()}
 	} else {
+		fmt.Printf("Olha só %v", res)
 		if res.StatusCode == 200 {
 			statChan <- Stat{Name: rule.Request.Name, RespCount: 1, LastResponse: time.Now()}
 		} else {
